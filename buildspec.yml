@@ -1,0 +1,25 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo "Starting Smart Factory CI/CD build..."
+      - python --version
+      - python -m py_compile lambda/lambda_function.py
+
+  build:
+    commands:
+      - echo "Packaging Lambda function..."
+      - cd lambda
+      - zip ../lambda.zip lambda_function.py
+      - cd ..
+
+  post_build:
+    commands:
+      - echo "Deploying Lambda function..."
+      - aws lambda update-function-code --function-name smart-factory-sensor-processor --zip-file fileb://lambda.zip
+      - echo "Smart Factory Lambda deployment completed successfully."
+
+artifacts:
+  files:
+    - lambda.zip
